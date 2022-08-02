@@ -1,4 +1,10 @@
-import { Controller, Get, Param, Response } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Response,
+  NotFoundException,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -8,7 +14,9 @@ export class AppController {
   @Get(':hash')
   async encodeShortenUrl(@Param('hash') hash, @Response() res) {
     const originalURL = await this.appService.encodeShortenUrl(hash);
-    if (!originalURL) return 'Original URL not found';
+    if (!originalURL) {
+      throw new NotFoundException('URL is not valid!');
+    }
     res.redirect(originalURL);
   }
 }
