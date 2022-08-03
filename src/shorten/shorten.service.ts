@@ -16,18 +16,18 @@ export class ShortenService {
   ) {}
 
   async create(createShortenDto: CreateShortenDto): Promise<string> {
-    const shortentDomain = this.configService.get<string>('SHORTEN_DOMAIN');
+    const shortenDomain = this.configService.get<string>('SHORTEN_DOMAIN');
     const { originURL } = createShortenDto;
     const record = await this.shortenRepository.findOneBy({ originURL });
     if (record) {
-      return `${shortentDomain}/${record.hash}`;
+      return `${shortenDomain}/${record.hash}`;
     }
     const hash = nanoid(6);
     const newRecord = await this.shortenRepository.save({
       hash,
       ...createShortenDto,
     });
-    return `${shortentDomain}/${newRecord.hash}`;
+    return `${shortenDomain}/${newRecord.hash}`;
   }
 
   findOne(hash: string): Promise<Shorten> {
