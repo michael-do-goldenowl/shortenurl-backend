@@ -1,24 +1,18 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ShortenModule } from './shorten/shorten.module';
-
-import { Shorten } from './shorten/entities/shorten.entity';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'root',
-      password: 'root',
-      database: 'shorten',
-      entities: [Shorten],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `src/config/environments/${process.env.NODE_ENV}.env`,
     }),
+    DatabaseModule,
     ShortenModule,
   ],
   controllers: [AppController],

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { nanoid } from 'nanoid';
+import { ConfigService } from '@nestjs/config';
 
 import { Shorten } from './entities/shorten.entity';
 import { CreateShortenDto } from './dto/create-shorten.dto';
@@ -11,24 +12,22 @@ export class ShortenService {
   constructor(
     @InjectRepository(Shorten)
     private shortenRepository: Repository<Shorten>,
+    private readonly configService: ConfigService,
   ) {}
 
-  async create(
-    createShortenDto: CreateShortenDto,
-    host: string,
-  ): Promise<string> {
-    const { url } = createShortenDto;
-    const record = await this.shortenRepository.findOneBy({ originURL: url });
+  async create(createShortenDto: CreateShortenDto): Promise<string> {
+    const shortentDomain = this.configService.get<string>('SHORTEN_DOMAIN');
+    const { originURL } = createShortenDto;
+    const record = await this.shortenRepository.findOneBy({ originURL });
     if (record) {
-      return `${host}/${record.hash}`;
+      return `${shortentDomain}/${record.hash}`;
     }
     const hash = nanoid(6);
-    const shortenInstance = this.shortenRepository.create({
+    const newRecord = await this.shortenRepository.save({
       hash,
-      originURL: url,
+      ...createShortenDto,
     });
-    const newRecord = await this.shortenRepository.save(shortenInstance);
-    return `${host}/${newRecord.hash}`;
+    return `${shortentDomain}/${newRecord.hash}`;
   }
 
   findOne(hash: string): Promise<Shorten> {

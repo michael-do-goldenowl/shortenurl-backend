@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryColumn, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  CreateDateColumn,
+  Index,
+} from 'typeorm';
 
 @Entity()
 export class Shorten {
@@ -6,6 +12,7 @@ export class Shorten {
   hash: string;
 
   @Column()
+  @Index()
   originURL: string;
 
   @CreateDateColumn({

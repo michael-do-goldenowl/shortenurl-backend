@@ -12,8 +12,8 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get(':hash')
-  async encodeShortenUrl(@Param('hash') hash, @Response() res) {
-    const originalURL = await this.appService.encodeShortenUrl(hash);
+  async decodeShortenUrl(@Param('hash') hash, @Response() res) {
+    const originalURL = await this.appService.decodeShortenUrl(hash);
     if (!originalURL) {
       throw new NotFoundException('URL is not valid!');
     }
